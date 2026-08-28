@@ -115,5 +115,5 @@ skin-disease-classification/
 - Mobile application conversion using TensorFlow Lite.
 
 ---
-**Author:** 4th-Year CSE Student  
+**Author:** MUTHYALA SASHANK ABHIRAM 
 **Year:** 2026
