@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Disease Classification | AI Prototype</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <i class="fa-solid fa-microscope"></i>
+                <h1>DermAI <span class="badge">Prototype</span></h1>
+            </div>
+            <p class="subtitle">Skin Lesion Classification powered by Deep Learning</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Medical Disclaimer Card -->
+            <div class="disclaimer-alert">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div class="disclaimer-text">
+                    <strong>Educational/Research Prototype:</strong> This system is designed for educational and research purposes only. It classifies images based on patterns learned from the HAM10000 dataset and is <em>not a medical diagnostic tool</em>. Do not use its predictions to make medical decisions. Consult a qualified healthcare professional for medical evaluation.
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <section id="upload-section" class="card active">
+                <div class="card-header">
+                    <h2>Image Analysis</h2>
+                    <p>Upload a dermatoscopic image of a skin lesion for classification.</p>
+                </div>
+                
+                <form id="upload-form" class="upload-area" enctype="multipart/form-data">
+                    <input type="file" id="file-input" name="file" accept=".jpg, .jpeg, .png" hidden>
+                    <div id="drop-zone" class="drop-zone">
+                        <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
+                        <span class="drop-title">Drag & Drop Image Here</span>
+                        <span class="drop-desc">or click to browse (.jpg, .png)</span>
+                    </div>
+                </form>
+
+                <div id="preview-container" class="preview-container hidden">
+                    <img id="image-preview" src="" alt="Image Preview">
+                    <div class="preview-actions">
+                        <button id="btn-remove" class="btn btn-secondary"><i class="fa-solid fa-trash"></i> Remove</button>
+                        <button id="btn-analyze" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Analyze Image</button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading-container" class="loading-container hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing image with Deep Learning model...</p>
+                    <p class="sub-loading">Extracting features and calculating probabilities</p>
+                </div>
+                
+                <!-- Error Message -->
+                <div id="error-message" class="error-message hidden">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span id="error-text">An error occurred.</span>
+                </div>
+            </section>
+
+            <!-- Result Section -->
+            <section id="result-section" class="card hidden">
+                <div class="card-header">
+                    <h2>Analysis Result</h2>
+                    <p>Model predictions based on the HAM10000 dataset categories.</p>
+                </div>
+                
+                <div class="result-layout">
+                    <!-- Left: Uploaded Image -->
+                    <div class="result-image-box">
+                        <img id="result-image" src="" alt="Analyzed Image">
+                    </div>
+                    
+                    <!-- Right: Prediction Data -->
+                    <div class="result-data-box">
+                        <div class="primary-prediction">
+                            <h3>Predicted Class</h3>
+                            <h2 id="pred-class-name" class="highlight-text">Melanocytic Nevi</h2>
+                            
+                            <div class="confidence-box">
+                                <span class="conf-label">Confidence</span>
+                                <span id="pred-conf-score" class="conf-score">91.42%</span>
+                                <span id="pred-conf-level" class="conf-level badge-high">High model confidence</span>
+                            </div>
+                        </div>
+
+                        <div class="probability-distribution">
+                            <h3>Class Probabilities</h3>
+                            <div id="prob-bars-container" class="prob-bars">
+                                <!-- Probability bars injected via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-actions">
+                    <button id="btn-analyze-another" class="btn btn-primary btn-full"><i class="fa-solid fa-rotate-left"></i> Analyze Another Image</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Developed for Final Year CSE Project &copy; 2026</p>
+            <p class="dataset-credit">Trained on the <a href="https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/DBW86T" target="_blank">HAM10000 Dataset</a></p>
+        </footer>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
