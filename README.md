@@ -22,6 +22,11 @@ Dermatological diagnostics often require specialized equipment and expertise. By
 ## 📊 Dataset & Classes
 Trained on the **HAM10000** (Human Against Machine with 10000 training images) dataset.
 
+**Download the dataset:** Due to size constraints, the dataset is not included in this repository. You can download it directly from Kaggle:
+👉 [HAM10000 Dataset on Kaggle](https://www.kaggle.com/datasets/kmader/skin-cancer-mnist-ham10000)
+
+Once downloaded, extract the contents into the `dataset/` directory.
+
 | Code | Class Name |
 |------|------------|
 | `akiec`| Actinic Keratoses / Intraepithelial Carcinoma |
