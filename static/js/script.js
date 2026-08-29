@@ -108,7 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
         fileInput.value = '';
         imagePreview.src = '';
         resultSection.classList.add('hidden');
+        resultSection.classList.remove('active');
         uploadSection.classList.remove('hidden');
+        // Add a tiny delay to allow display:block to apply before animating opacity/transform
+        setTimeout(() => uploadSection.classList.add('active'), 50);
         previewContainer.classList.add('hidden');
         uploadForm.style.display = 'block';
         hideError();
@@ -169,22 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Build Probability Bars
         probBarsContainer.innerHTML = '';
         data.all_probabilities.forEach(item => {
-            // Color based on value
-            let color = '#2563eb'; // blue
-            if (item.name === data.predicted_class_name) {
-                if (item.percentage >= 85) color = '#10b981'; // green
-                else if (item.percentage >= 50) color = '#f59e0b'; // yellow
-                else color = '#ef4444'; // red
-            }
+            // Determine if this is the predicted class to highlight it
+            const isPredicted = item.name === data.predicted_class_name;
+            const barStyle = isPredicted ? 'background: var(--accent);' : 'background: var(--accent); opacity: 0.3;';
+            const textStyle = isPredicted ? 'color: var(--accent); font-weight: 600;' : '';
             
             const rowHTML = `
                 <div class="prob-row">
                     <div class="prob-label">
-                        <span>${item.name} (${item.code})</span>
-                        <span>${item.percentage}%</span>
+                        <span style="${textStyle}">${item.name} (${item.code})</span>
+                        <span style="${textStyle}">${item.percentage}%</span>
                     </div>
                     <div class="prob-bar-bg">
-                        <div class="prob-bar-fill" style="width: 0%; background-color: ${color};" data-width="${item.percentage}%"></div>
+                        <div class="prob-bar-fill" style="width: 0%; ${barStyle}" data-width="${item.percentage}%"></div>
                     </div>
                 </div>
             `;
@@ -202,7 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Switch Sections
         loadingContainer.classList.add('hidden');
         uploadSection.classList.add('hidden');
+        uploadSection.classList.remove('active');
         resultSection.classList.remove('hidden');
+        setTimeout(() => resultSection.classList.add('active'), 50);
     }
 
     // --- Utils ---

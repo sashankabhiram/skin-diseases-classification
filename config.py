@@ -1,16 +1,18 @@
 import os
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 class Config:
     # Flask settings
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev_secret_key_12345')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB max upload size
     
     # Upload settings
-    UPLOAD_FOLDER = os.path.join('static', 'uploads')
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
     
     # Model settings
-    MODEL_PATH = os.path.join('model', 'trained_model.keras')
+    MODEL_PATH = os.path.join(BASE_DIR, 'model', 'trained_model.keras')
     IMAGE_SIZE = (224, 224)
     
     # Class mapping for HAM10000 dataset

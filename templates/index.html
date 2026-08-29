@@ -30,7 +30,7 @@
             <div class="disclaimer-alert">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 <div class="disclaimer-text">
-                    <strong>Educational/Research Prototype:</strong> This system is designed for educational and research purposes only. It classifies images based on patterns learned from the HAM10000 dataset and is <em>not a medical diagnostic tool</em>. Do not use its predictions to make medical decisions. Consult a qualified healthcare professional for medical evaluation.
+                    <strong>Educational Prototype:</strong> This system classifies images based on HAM10000 dataset patterns. It is not a medical diagnostic tool. Do not use for clinical decisions. Consult a qualified healthcare professional.
                 </div>
             </div>
 
@@ -60,8 +60,10 @@
 
                 <!-- Loading State -->
                 <div id="loading-container" class="loading-container hidden">
-                    <div class="spinner"></div>
-                    <p>Analyzing image with Deep Learning model...</p>
+                    <div class="dermatoscope-frame">
+                        <div class="scan-line"></div>
+                    </div>
+                    <p>Analyzing image data...</p>
                     <p class="sub-loading">Extracting features and calculating probabilities</p>
                 </div>
                 
