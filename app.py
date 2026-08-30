@@ -54,11 +54,13 @@ def analyze():
             if preprocessed_img is None:
                 return jsonify({"error": "Failed to process the image. The file might be corrupted."}), 500
                 
-            # 6. Run Prediction
-            result = predict_skin_lesion(preprocessed_img)
+            # 6. Run Prediction and Generate Grad-CAM
+            result = predict_skin_lesion(preprocessed_img, filepath)
             
             # 7. Add image path to result for preview
             result['image_url'] = url_for('static', filename=f'uploads/{unique_filename}')
+            if 'gradcam_filename' in result:
+                result['gradcam_url'] = url_for('static', filename=f"uploads/{result['gradcam_filename']}")
             
             # Return JSON result for AJAX handling
             return jsonify(result)

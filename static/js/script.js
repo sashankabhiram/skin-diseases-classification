@@ -24,6 +24,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const predConfLevel = document.getElementById('pred-conf-level');
     const probBarsContainer = document.getElementById('prob-bars-container');
     
+    // Camera DOM Elements
+    const btnOpenCamera = document.getElementById('btn-open-camera');
+    const cameraContainer = document.getElementById('camera-container');
+    const cameraVideo = document.getElementById('camera-video');
+    const cameraCanvas = document.getElementById('camera-canvas');
+    const btnCloseCamera = document.getElementById('btn-close-camera');
+    const btnCapturePhoto = document.getElementById('btn-capture-photo');
+    let stream = null;
+
+    // Grad-CAM and Info DOM Elements
+    const gradcamImage = document.getElementById('gradcam-image');
+    const btnShowOriginal = document.getElementById('btn-show-original');
+    const btnShowGradcam = document.getElementById('btn-show-gradcam');
+    const infoTitle = document.getElementById('info-title');
+    const infoDescription = document.getElementById('info-description');
+    const infoUrgency = document.getElementById('info-urgency');
+    
+    const diseaseInfoMap = {
+        'akiec': {
+            title: 'Actinic Keratoses',
+            description: 'Actinic keratoses (AK) are precancerous skin growths caused by prolonged sun exposure. They often appear as small, rough, or scaly patches on sun-damaged skin.',
+            urgency: 'See a dermatologist for evaluation. Left untreated, some can turn into squamous cell carcinoma.'
+        },
+        'bcc': {
+            title: 'Basal Cell Carcinoma',
+            description: 'Basal cell carcinoma is the most common form of skin cancer. It often looks like a pearly or waxy bump and rarely spreads, but can cause local tissue damage.',
+            urgency: 'Requires medical attention. Highly curable if caught and treated early by a professional.'
+        },
+        'bkl': {
+            title: 'Benign Keratosis-like Lesions',
+            description: 'These are non-cancerous growths, often seborrheic keratoses, which appear as warty, brown, or black pasted-on looking spots.',
+            urgency: 'Generally harmless. No treatment is needed unless they become irritated or for cosmetic reasons.'
+        },
+        'df': {
+            title: 'Dermatofibroma',
+            description: 'A common benign skin growth that often appears as a firm bump on the lower legs. They are thought to be a reaction to minor trauma like bug bites.',
+            urgency: 'Harmless and does not require treatment. Consult a doctor if it changes, bleeds, or causes pain.'
+        },
+        'mel': {
+            title: 'Melanoma',
+            description: 'Melanoma is the most dangerous type of skin cancer. It develops from the pigment-producing cells and can grow rapidly and spread to other organs.',
+            urgency: 'URGENT: Requires immediate evaluation by a dermatologist. Early detection is critical for a high survival rate.'
+        },
+        'nv': {
+            title: 'Melanocytic Nevi (Moles)',
+            description: 'Common moles are benign clusters of melanocytes. Almost everyone has them. They are usually uniform in color and have distinct borders.',
+            urgency: 'Typically harmless. Monitor for changes in symmetry, border, color, or diameter (ABCD rule).'
+        },
+        'vasc': {
+            title: 'Vascular Lesions',
+            description: 'These are relatively common abnormalities of the blood vessels in the skin, such as cherry angiomas or hemangiomas.',
+            urgency: 'Usually benign and harmless. Seek medical advice if they bleed frequently or change rapidly.'
+        }
+    };
+
     let selectedFile = null;
 
     // --- Drag and Drop Events ---
@@ -92,7 +147,54 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsDataURL(file);
     }
 
+    // --- Camera Logic ---
+    btnOpenCamera.addEventListener('click', async () => {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            cameraVideo.srcObject = stream;
+            uploadForm.style.display = 'none';
+            cameraContainer.classList.remove('hidden');
+        } catch (err) {
+            console.error("Camera error:", err);
+            showError("Could not access camera. Please allow permissions.");
+        }
+    });
+
+    btnCloseCamera.addEventListener('click', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        cameraContainer.classList.add('hidden');
+        uploadForm.style.display = 'block';
+    });
+
+    btnCapturePhoto.addEventListener('click', () => {
+        cameraCanvas.width = cameraVideo.videoWidth;
+        cameraCanvas.height = cameraVideo.videoHeight;
+        cameraCanvas.getContext('2d').drawImage(cameraVideo, 0, 0);
+        
+        cameraCanvas.toBlob((blob) => {
+            const file = new File([blob], "camera_capture.jpg", { type: "image/jpeg" });
+            handleFiles(file);
+            btnCloseCamera.click();
+        }, 'image/jpeg', 0.95);
+    });
+
     // --- Button Actions ---
+    btnShowOriginal.addEventListener('click', () => {
+        resultImage.classList.remove('hidden');
+        gradcamImage.classList.add('hidden');
+        btnShowOriginal.classList.add('active');
+        btnShowGradcam.classList.remove('active');
+    });
+
+    btnShowGradcam.addEventListener('click', () => {
+        resultImage.classList.add('hidden');
+        gradcamImage.classList.remove('hidden');
+        btnShowOriginal.classList.remove('active');
+        btnShowGradcam.classList.add('active');
+    });
+
     btnRemove.addEventListener('click', () => {
         selectedFile = null;
         fileInput.value = '';
@@ -157,6 +259,32 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayResults(data) {
         // Set Image
         resultImage.src = data.image_url;
+        
+        // Setup Grad-CAM
+        if (data.gradcam_url) {
+            gradcamImage.src = data.gradcam_url;
+            btnShowGradcam.style.display = 'inline-block';
+        } else {
+            btnShowGradcam.style.display = 'none';
+        }
+        btnShowOriginal.click(); // Reset toggle to original image view
+        
+        // Setup Disease Info
+        const info = diseaseInfoMap[data.predicted_class_code];
+        if (info) {
+            infoTitle.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${info.title}`;
+            infoDescription.textContent = info.description;
+            infoUrgency.textContent = info.urgency;
+            
+            // Emphasize urgency if Melanoma
+            if (data.predicted_class_code === 'mel') {
+                infoUrgency.parentElement.style.color = '#b91c1c';
+                infoUrgency.parentElement.style.backgroundColor = '#fef2f2';
+            } else {
+                infoUrgency.parentElement.style.color = '';
+                infoUrgency.parentElement.style.backgroundColor = '';
+            }
+        }
         
         // Set Primary Prediction
         predClassName.textContent = data.predicted_class_name;

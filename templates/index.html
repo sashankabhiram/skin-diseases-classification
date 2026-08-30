@@ -47,8 +47,22 @@
                         <i class="fa-solid fa-cloud-arrow-up drop-icon"></i>
                         <span class="drop-title">Drag & Drop Image Here</span>
                         <span class="drop-desc">or click to browse (.jpg, .png)</span>
+                        <div class="camera-action">
+                            <span>OR</span>
+                            <button type="button" id="btn-open-camera" class="btn btn-secondary btn-small"><i class="fa-solid fa-camera"></i> Take Photo</button>
+                        </div>
                     </div>
                 </form>
+
+                <!-- Camera Modal/Container -->
+                <div id="camera-container" class="camera-container hidden">
+                    <video id="camera-video" autoplay playsinline></video>
+                    <canvas id="camera-canvas" hidden></canvas>
+                    <div class="camera-actions">
+                        <button id="btn-close-camera" class="btn btn-secondary"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                        <button id="btn-capture-photo" class="btn btn-primary"><i class="fa-solid fa-camera"></i> Capture</button>
+                    </div>
+                </div>
 
                 <div id="preview-container" class="preview-container hidden">
                     <img id="image-preview" src="" alt="Image Preview">
@@ -82,9 +96,16 @@
                 </div>
                 
                 <div class="result-layout">
-                    <!-- Left: Uploaded Image -->
+                    <!-- Left: Uploaded Image & Grad-CAM -->
                     <div class="result-image-box">
-                        <img id="result-image" src="" alt="Analyzed Image">
+                        <div class="image-toggle-container">
+                            <button id="btn-show-original" class="btn-toggle active">Original</button>
+                            <button id="btn-show-gradcam" class="btn-toggle">Grad-CAM (AI Focus)</button>
+                        </div>
+                        <div class="image-wrapper">
+                            <img id="result-image" src="" alt="Analyzed Image">
+                            <img id="gradcam-image" src="" alt="Grad-CAM Heatmap" class="hidden">
+                        </div>
                     </div>
                     
                     <!-- Right: Prediction Data -->
@@ -104,6 +125,15 @@
                             <h3>Class Probabilities</h3>
                             <div id="prob-bars-container" class="prob-bars">
                                 <!-- Probability bars injected via JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- Disease Information Card -->
+                        <div id="disease-info-card" class="disease-info-card">
+                            <h3 id="info-title"><i class="fa-solid fa-circle-info"></i> About the Prediction</h3>
+                            <p id="info-description">Description goes here.</p>
+                            <div class="info-alert">
+                                <strong><i class="fa-solid fa-stethoscope"></i> Note:</strong> <span id="info-urgency">See a doctor for confirmation.</span>
                             </div>
                         </div>
                     </div>
